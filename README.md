@@ -150,9 +150,13 @@ Please see [CONTRIBUTING.md](./CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](./CODE_
 
 ---
 
-## Changelog
+## 📦 Dependencies
 
-See [CHANGELOG.md](./CHANGELOG.md) for release notes and version history.
+Here’s a breakdown of the main dependencies used in this project:
+
+- 🕸️ selenium - Used to automate the browser and interact with the GoVault website (e.g., clicking buttons, filling forms, extracting data).
+- 🌱 python-dotenv - Loads environment variables (like email and password) from a .env file for secure configuration.
+- 📋 pyperclip- Used for copying the generated password to the clipboard.
 
 ---
 
