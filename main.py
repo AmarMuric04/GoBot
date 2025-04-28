@@ -17,6 +17,7 @@ load_dotenv()
 
 
 def spinner(message):
+    return
     for c in itertools.cycle(["|", "/", "-", "\\"]):
         if not spin:
             break
@@ -56,29 +57,29 @@ driver.get("https://govault.vercel.app/generate")
 
 driver.maximize_window()
 
-password = driver.find_element("css selector", "input")
+password = driver.find_element(By.CSS_SELECTOR, "input")
 
 
 while not is_valid_email(user_email):
     user_email = input("Enter a valid email: ")
 
 
-while not is_valid_password(user_password):
-    option = input(
-        "\n\nYour password does not meet the requirements!\nUse a GoVault generated password? (Y/N): "
-    )
+# while not is_valid_password(user_password):
+#     option = input(
+#         "\n\nYour password does not meet the requirements!\nUse a GoVault generated password? (Y/N): "
+#     )
 
-    if option.lower() == "y":
-        user_password = password.get_attribute("value")
-    else:
-        user_password = input(
-            "\n\nPassword must have:\n8 Characters\nat least 1 special character\nAt least 1 number\nEnter a valid password: "
-        )
-    if is_valid_password(user_password):
-        pyperclip.copy(user_password)
-        stop_process = input(
-            "\n\nThe password was copied to your clipboard!\nTake a second to save it to your .env file.\n* If you don't do this, you'll need to go to @ https://govault.vercel.app/reset-password to reset it.\n\nWhen you save the password, press Enter to continue!"
-        )
+#     if option.lower() == "y":
+#         user_password = password.get_attribute("value")
+#     else:
+#         user_password = input(
+#             "\n\nPassword must have:\n8 Characters\nat least 1 special character\nAt least 1 number\nEnter a valid password: "
+#         )
+#     if is_valid_password(user_password):
+#         pyperclip.copy(user_password)
+#         stop_process = input(
+#             "\n\nThe password was copied to your clipboard!\nTake a second to save it to your .env file.\n* If you don't do this, you'll need to go to @ https://govault.vercel.app/reset-password to reset it.\n\nWhen you save the password, press Enter to continue!"
+#         )
 
 
 def signin():
@@ -89,18 +90,14 @@ def signin():
     password_input.send_keys(user_password)
 
     signin_button = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located(
-            (By.XPATH, '//*[@id="radix-«r0»"]/form/div[4]/button[2]')
-        )
+        EC.presence_of_element_located((By.CSS_SELECTOR, "#signin"))
     )
 
     signin_button.click()
 
     try:
         no_account_message = WebDriverWait(driver, 4).until(
-            EC.presence_of_element_located(
-                (By.XPATH, '//*[@id="radix-«r0»"]/form/div[1]/div/div')
-            )
+            EC.presence_of_element_located((By.CSS_SELECTOR, "#error"))
         )
 
         signup()
@@ -110,10 +107,14 @@ def signin():
 
 def signup():
     create_account_link = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable((By.XPATH, '//*[@id="radix-«r0»"]/form/div[5]/span'))
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "#create-one"))
     )
 
     create_account_link.click()
+
+    create_account_button = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "#authenticate"))
+    )
 
     email_input = driver.find_element(By.NAME, "email")
     password_input = driver.find_element(By.NAME, "password")
@@ -121,17 +122,15 @@ def signup():
     email_input.send_keys(user_email)
     password_input.send_keys(user_password)
 
-    create_account_button = driver.find_element(
-        By.XPATH, '//*[@id="radix-«r0»"]/form/div[3]/button[2]'
-    )
-
     create_account_button.click()
+
+    time.sleep(3)
+
+    driver.get("https://govault.vercel.app/generate")
 
     try:
         already_exists = WebDriverWait(driver, 4).until(
-            EC.presence_of_element_located(
-                (By.XPATH, '//*[@id="radix-«r0»"]/form/div[1]/div/div')
-            )
+            EC.presence_of_element_located((By.CSS_SELECTOR, "#error"))
         )
 
         print(
@@ -161,9 +160,7 @@ loading_thread = threading.Thread(target=spinner, args=["Saving password"])
 loading_thread.start()
 
 
-save_to_vault_button = driver.find_element(
-    By.XPATH, "/html/body/main/main/section/div/div[1]/div[1]/button[1]"
-)
+save_to_vault_button = driver.find_element(By.CSS_SELECTOR, "#save-to-vault")
 
 
 save_to_vault_button.click()
@@ -172,10 +169,10 @@ save_to_vault_button.click()
 signin()
 
 
+password = driver.find_element(By.CSS_SELECTOR, "input")
+
 if user_password == password.get_attribute("value"):
-    regenerate_password = driver.find_element(
-        By.XPATH, "/html/body/main/main/section/div/div[1]/div[1]/button[3]"
-    )
+    regenerate_password = driver.find_element(By.CSS_SELECTOR, "#regenerate")
     regenerate_password.click()
 
     try:
@@ -185,13 +182,13 @@ if user_password == password.get_attribute("value"):
     except Exception as e:
         print("Failed to reload password input after regenerating:", e)
 
+
 avatar = WebDriverWait(driver, 10).until(
     EC.presence_of_element_located((By.XPATH, "/html/body/main/main/header/div"))
 )
 
-save_to_vault_button = driver.find_element(
-    By.XPATH, "/html/body/main/main/section/div/div[1]/div[1]/button[1]"
-)
+save_to_vault_button = driver.find_element(By.CSS_SELECTOR, "#save-to-vault")
+
 
 save_to_vault_button.click()
 
@@ -206,7 +203,7 @@ notes_input = WebDriverWait(driver, 10).until(
 source_input.send_keys(source)
 notes_input.send_keys(notes)
 
-submit_button = driver.find_element(By.XPATH, '//*[@id="radix-«r7»"]/div[3]/button[2]')
+submit_button = driver.find_element(By.CSS_SELECTOR, "#submit")
 
 submit_button.click()
 
